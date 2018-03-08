@@ -2,6 +2,7 @@ package com.fox.andrey.beatbox;
 
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -19,6 +20,7 @@ public class BeatBox {
     private AssetManager mAssets;
     private List<Sound> mSounds = new ArrayList<>();
     private SoundPool mSoundPool;
+    private float ratePlay = 1.0f;
 
     public BeatBox (Context context){
         mAssets = context.getAssets();
@@ -28,23 +30,50 @@ public class BeatBox {
 
     private void loadSounds() {
         String[] soundNames;
+
         try {
             soundNames = mAssets.list(SOUNDS_FOLDER);
-            Log.e(TAG,"Found " + soundNames.length + " sounds");
-        }catch (IOException ioe){
-            Log.e(TAG,"Could not list assets", ioe);
+            Log.e(TAG, "Found " + soundNames.length + " sounds");
+        } catch (IOException ioe) {
+            Log.e(TAG, "Could not list assets", ioe);
             return;
         }
 
-        for (String fileName: soundNames){
-            String assetPath = SOUNDS_FOLDER + "/" + fileName;
-            Sound sound = new Sound(assetPath);
-            mSounds.add(sound);
+        for (String fileName : soundNames) {
+            try {
+                String assetPath = SOUNDS_FOLDER + "/" + fileName;
+                Sound sound = new Sound(assetPath);
+                load(sound);
+                mSounds.add(sound);
+            } catch (IOException e) {
+                Log.e(TAG, "Could not load sound " + fileName, e);
+            }
         }
     }
 
     public List<Sound> getmSounds(){
         return mSounds;
+    }
+
+    private void load(Sound sound) throws IOException {
+        AssetFileDescriptor afd = mAssets.openFd(sound.getmAssetsPath());
+        int soundId = mSoundPool.load(afd,1);
+        sound.setmSoundId(soundId);
+    }
+
+    public void play(Sound sound){
+        Integer soundId = sound.getmSoundId();
+        if (soundId == null) return;
+        mSoundPool.play(soundId,1.0f,1.0f,1,0,Singleton.getsSingleton().getRatePlay());
+    }
+
+    //выгружаю звуки из пула
+    public void release(){
+        mSoundPool.release();
+    }
+
+    public void setRatePlay(float ratePlay) {
+        this.ratePlay = ratePlay;
     }
 
 }

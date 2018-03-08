@@ -1,12 +1,18 @@
 package com.fox.andrey.beatbox;
 
-/**
- * Created by Andrey on 05.02.2018.
- */
 
 public class Sound {
     private String mAssetsPath;
     private String mName;
+    private Integer mSoundId;
+
+    public Integer getmSoundId() {
+        return mSoundId;
+    }
+
+    public void setmSoundId(Integer mSoundId) {
+        this.mSoundId = mSoundId;
+    }
 
     public Sound(String assetPath){
         mAssetsPath = assetPath;
@@ -19,7 +25,7 @@ public class Sound {
         return mAssetsPath;
     }
 
-    public String getmName() {
+public String getmName() {
         return mName;
     }
 }

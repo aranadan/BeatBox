@@ -24,6 +24,8 @@ public class BeatBoxFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBeatBox = new BeatBox(getActivity());
+        //фрагмент не удаляется а передается новой активности
+        setRetainInstance(true);
     }
 
 
@@ -40,6 +42,8 @@ public class BeatBoxFragment extends Fragment {
 
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         binding.recyclerView.setAdapter(new SoundAdapter(mBeatBox.getmSounds()));
+        binding.setSeekBarModel(new SeekBarValueModel(mBeatBox,getContext()));
+
 
         return binding.getRoot();
     }
@@ -86,5 +90,11 @@ public class BeatBoxFragment extends Fragment {
         public int getItemCount() {
             return mSounds.size();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mBeatBox.release();
     }
 }
